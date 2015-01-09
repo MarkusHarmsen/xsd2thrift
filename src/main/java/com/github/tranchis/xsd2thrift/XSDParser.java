@@ -4,19 +4,19 @@
  * ============================================================================
  *
  * XSD2Thrift
- * 
+ *
  * Copyright (C) 2009 Sergio Alvarez-Napagao http://www.sergio-alvarez.com
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
@@ -67,7 +67,7 @@ public class XSDParser implements ErrorHandler {
     private OutputStream os;
     private String namespace;
     private boolean nestEnums = true;
-    
+
     public XSDParser(String stFile) {
         this.xsdMapping = new TreeMap<String, String>();
         init(stFile);
@@ -113,7 +113,7 @@ public class XSDParser implements ErrorHandler {
         basicTypes.add("base64Binary");
         basicTypes.add("hexBinary");
         // binary is not a valid XSD type, but used as a placeholder internally
-        basicTypes.add("binary"); 
+        basicTypes.add("binary");
         basicTypes.add("boolean");
         basicTypes.add("date");
         basicTypes.add("dateTime");
@@ -248,12 +248,12 @@ public class XSDParser implements ErrorHandler {
                 usedInEnums.add(type);
                 writeEnum(type);
             }
-            
+
             if (simpleTypes.containsKey(type)) {
                 type = simpleTypes.get(type);
             }
 
-            if (!map.keySet().contains(type) && !basicTypes.contains(type) && !enums.containsKey(type)) {
+            if (type == null || (!map.keySet().contains(type) && !basicTypes.contains(type) && !enums.containsKey(type))) {
                 type = "binary";
             }
             if (type.equals(fname)) {
@@ -316,7 +316,7 @@ public class XSDParser implements ErrorHandler {
         String res;
 
         final char[] nameChars = name.toCharArray();
-        
+
         for (int i = 0; i < nameChars.length; i++) {
             if (!Character.isJavaIdentifierPart(nameChars[i])) {
                 nameChars[i] = '_';
@@ -324,7 +324,7 @@ public class XSDParser implements ErrorHandler {
         }
 
         res = String.valueOf(nameChars);
-        
+
         if (!Character.isJavaIdentifierStart(nameChars[0]) || keywords.contains(res)) {
             res = "_" + res;
         }
@@ -382,7 +382,7 @@ public class XSDParser implements ErrorHandler {
 
     /**
      * @param xs
-     * @param elementName 
+     * @param elementName
      */
     private String processSimpleType(XSSimpleType xs, String elementName) {
 
@@ -401,7 +401,7 @@ public class XSDParser implements ErrorHandler {
         } else {
             //This is just a restriction on a basic type, find parent and map it to the type
             String baseTypeName = typeName;
-            while (xs != null && !basicTypes.contains(baseTypeName)) {
+            while (xs != null && baseTypeName != null && !basicTypes.contains(baseTypeName)) {
                 xs = xs.getBaseType().asSimpleType();
                 if (xs != null) {
                     baseTypeName = xs.getName();
@@ -414,7 +414,7 @@ public class XSDParser implements ErrorHandler {
 
     /**
      * @param cType
-     * @param elementName 
+     * @param elementName
      * @param sset
      */
     private String processComplexType(XSComplexType cType, String elementName, XSSchemaSet sset) {
@@ -613,7 +613,7 @@ public class XSDParser implements ErrorHandler {
 	public void setNestEnums(boolean nestEnums) {
 		this.nestEnums = nestEnums;
 	}
-	
+
 	public boolean isNestEnums() {
 		return nestEnums;
 	}
